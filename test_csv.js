@@ -1,5 +1,8 @@
-export function parseCSV(csvText: string): Record<string, string>[] {
-  const lines: string[] = [];
+const fs = require('fs');
+const csvText = fs.readFileSync('Talksmiths_Prospects_1000_Companies.csv', 'utf8');
+
+function parseCSV(csvText) {
+  const lines = [];
   let currentLine = '';
   let inQuotes = false;
   
@@ -8,10 +11,7 @@ export function parseCSV(csvText: string): Record<string, string>[] {
     const char = csvText[i];
     if (char === '"') {
       inQuotes = !inQuotes;
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      if (char === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') {
-        i++; // skip the \n in \r\n
-      }
+    } else if (char === '\n' && !inQuotes) {
       lines.push(currentLine);
       currentLine = '';
       continue;
@@ -24,18 +24,15 @@ export function parseCSV(csvText: string): Record<string, string>[] {
 
   if (lines.length < 2) return [];
 
-  // Auto-detect delimiter from the first line
-  const delimiter = lines[0].includes(';') && !lines[0].includes(',') ? ';' : ',';
-
-  const headers = parseCSVLine(lines[0], delimiter);
-  const results: Record<string, string>[] = [];
+  const headers = parseCSVLine(lines[0]);
+  const results = [];
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
     
-    const values = parseCSVLine(line, delimiter);
-    const row: Record<string, string> = {};
+    const values = parseCSVLine(line);
+    const row = {};
     
     headers.forEach((header, index) => {
       row[header.trim()] = values[index] ? values[index].trim() : '';
@@ -47,8 +44,8 @@ export function parseCSV(csvText: string): Record<string, string>[] {
   return results;
 }
 
-function parseCSVLine(line: string, delimiter: string = ','): string[] {
-  const values: string[] = [];
+function parseCSVLine(line) {
+  const values = [];
   let currentValue = '';
   let inQuotes = false;
 
@@ -57,7 +54,7 @@ function parseCSVLine(line: string, delimiter: string = ','): string[] {
     
     if (char === '"') {
       inQuotes = !inQuotes;
-    } else if (char === delimiter && !inQuotes) {
+    } else if (char === ',' && !inQuotes) {
       values.push(currentValue);
       currentValue = '';
     } else {
@@ -67,4 +64,11 @@ function parseCSVLine(line: string, delimiter: string = ','): string[] {
   
   values.push(currentValue);
   return values.map(val => val.replace(/^"|"$/g, '').trim()); // Strip wrapping quotes
+}
+
+const parsed = parseCSV(csvText);
+console.log("Total parsed rows:", parsed.length);
+if (parsed.length > 0) {
+    console.log("First row Name:", parsed[0].Name);
+    console.log("Keys of first row:", Object.keys(parsed[0]));
 }

@@ -66,10 +66,11 @@ export default function SettingsPage() {
         const newLeads: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>[] = [];
         
         parsed.forEach(row => {
-          if (!row.Name) return; // Skip empty rows
+          const companyName = row.Name || row.Company || row['Company Name'];
+          if (!companyName) return; // Skip rows without a company name
           
           newLeads.push({
-            companyName: row.Name,
+            companyName: companyName,
             sector: row.Sector || '',
             city: row.City || '',
             fundingStage: row['Funding Stage'] || '',
