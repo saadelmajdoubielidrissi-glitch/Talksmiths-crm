@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(/c/Users/Saad El Majdoubi/AppData/Local/Programs/Python/Python312/python.exe:*)",
+      "WebSearch",
+      "WebFetch(domain:chari.ma)",
+      "WebFetch(domain:en.bladi.net)",
+      "WebFetch(domain:en.hespress.com)"
+    ]
+  }
+}

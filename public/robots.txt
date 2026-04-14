@@ -1,0 +1,6 @@
+﻿User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /teach-mode/
+
+Sitemap: https://talksmiths.ma/sitemap.xml

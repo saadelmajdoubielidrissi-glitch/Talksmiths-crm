@@ -1,0 +1,36 @@
+import urllib.parse
+targets = [
+    ('Atos Morocco', 'Tarik'),
+    ('Sopra Banking Software Morocco', 'Youssef'),
+    ('xHub', 'Badr'),
+    ('DXC Technology Morocco', 'Mehdi'),
+    ('NTT Data Morocco', 'Fred'),
+    ('SAP Morocco', 'Hicham'),
+    ('Oracle Morocco', 'Mhammed'),
+    ('Microsoft Morocco', 'Salima'),
+    ('Nuitee', 'Ali'),
+    ('Pactera EDGE Morocco', 'Hajar')
+]
+
+body_template = '''Bonjour {name},
+
+J'ai suivi avec beaucoup d'intérêt la croissance de vos opérations au Maroc pour servir vos différents marchés anglophones.
+
+Lorsque les opérations passent à l'échelle sur des portefeuilles US/UK, le défi majeur n'est pas le niveau d'anglais des agents, mais la capacité des équipes dirigeantes (Site Directors, Operations Managers) à défendre leurs KPIs et articuler les nuances opérationnelles de manière professionnelle lors des QBR avec les clients nord-américains.
+
+Chez Talksmiths, nous organisons un coaching intensif en anglais des affaires, pensé exclusivement pour le management. Nous travaillons la posture, le vocabulaire d'action et les structures exécutives nécessaires pour rassurer la clientèle anglophone.
+
+Seriez-vous ouvert à un bref échange la semaine prochaine pour voir comment nous pourrions soutenir vos leaders locaux ?
+
+Cordialement,
+Saad El Majdoubi
+Talksmiths'''
+
+print("Task Description Text:\n")
+for i, (company, first) in enumerate(targets):
+    subject = f'Talksmiths x {company} - Scale anglophone'
+    body = body_template.format(name=first)
+    url = f'https://mail.google.com/mail/?authuser=saad.elmajdoubi@talksmiths.net&view=cm&fs=1&su={urllib.parse.quote(subject)}&body={urllib.parse.quote(body)}'
+    print(f"{i+1}. Navigate to this exact URL:")
+    print(url)
+    print("Wait 3 seconds for it to autosave, then close the tab/compose window.\n")

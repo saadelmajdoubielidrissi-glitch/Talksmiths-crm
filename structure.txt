@@ -1,0 +1,94 @@
+Structure du dossier
+Le numéro de série du volume est 8400-7057
+C:.
+¦   package-lock.json
+¦   structure.txt
+¦   
++---.claude
+¦       settings.local.json
+¦       
++---ai-sales-team-claude
+    ¦   .gitignore
+    ¦   banner.svg
+    ¦   CLAUDE.md
+    ¦   install.sh
+    ¦   LICENSE
+    ¦   README.md
+    ¦   requirements.txt
+    ¦   uninstall.sh
+    ¦   
+    +---agents
+    ¦       sales-company.md
+    ¦       sales-competitive.md
+    ¦       sales-contacts.md
+    ¦       sales-opportunity.md
+    ¦       sales-strategy.md
+    ¦       
+    +---docs
+    ¦       608190600_1622790172470674_8831090803308239120_n.jpg
+    ¦       611009269_760773459751328_5987884527032767168_n.jpg
+    ¦       MOROCCO_500_TARGETS.csv
+    ¦       plans.png
+    ¦       Talksmiths Portfolio.pdf
+    ¦       Talksmiths Structure & Pricing.pdf
+    ¦       Talksmiths_Contacts_50.csv
+    ¦       Talksmiths_Email_Campaign_50.csv
+    ¦       TS SALES BLUEPRINT.pdf
+    ¦       
+    +---sales
+    ¦       SKILL.md
+    ¦       
+    +---scripts
+    ¦       analyze_prospect.py
+    ¦       contact_finder.py
+    ¦       generate_pdf_report.py
+    ¦       lead_scorer.py
+    ¦       
+    +---skills
+    ¦   +---sales-competitors
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-contacts
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-followup
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-icp
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-objections
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-outreach
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-prep
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-proposal
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-prospect
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-qualify
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-report
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-report-pdf
+    ¦   ¦       SKILL.md
+    ¦   ¦       
+    ¦   +---sales-research
+    ¦           SKILL.md
+    ¦           
+    +---templates
+            meeting-prep.md
+            objection-playbook.md
+            outreach-cold.md
+            outreach-referral.md
+            outreach-warm.md
+            proposal-template.md
+            
