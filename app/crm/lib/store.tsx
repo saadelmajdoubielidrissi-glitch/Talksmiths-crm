@@ -20,6 +20,7 @@ interface CRMActions {
   logout: () => void;
   // Leads
   addLead: (lead: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>) => Lead;
+  importLeads: (leads: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>[]) => void;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
   moveLead: (id: string, stage: PipelineStage) => void;
@@ -186,6 +187,18 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     return newLead;
   }, []);
 
+  const importLeads = useCallback((leadsData: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>[]) => {
+    const now = new Date().toISOString();
+    const newLeads = leadsData.map(data => ({
+      ...data,
+      id: `lead-${generateId()}`,
+      score: calculateScore(data),
+      createdAt: now,
+      updatedAt: now,
+    }));
+    setLeads(prev => [...newLeads, ...prev]);
+  }, []);
+
   const updateLead = useCallback((id: string, updates: Partial<Lead>) => {
     setLeads(prev => prev.map(l =>
       l.id === id ? { ...l, ...updates, score: calculateScore({ ...l, ...updates }), updatedAt: new Date().toISOString() } : l
@@ -310,7 +323,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
   const contextValue: CRMContextType = {
     leads, contacts, activities, partners, commissions, currentUser, isAuthenticated,
     login, logout,
-    addLead, updateLead, deleteLead, moveLead,
+    addLead, importLeads, updateLead, deleteLead, moveLead,
     addContact, updateContact, deleteContact, getContactsForLead,
     addActivity, getActivitiesForLead,
     addPartner, updatePartner,

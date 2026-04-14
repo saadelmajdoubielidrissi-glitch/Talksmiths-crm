@@ -1,12 +1,15 @@
 'use client';
 import React, { useState } from 'react';
-import { Save, Trash2, Plus, GripVertical, X, Download, RefreshCw } from 'lucide-react';
+import { Save, Trash2, Plus, GripVertical, X, Download, RefreshCw, Upload, Loader2, CheckCircle2 } from 'lucide-react';
 import { useCRM } from '../lib/store';
-import { PIPELINE_STAGES } from '../lib/types';
+import { PIPELINE_STAGES, Lead } from '../lib/types';
+import { parseCSV } from '../lib/csv';
 
 export default function SettingsPage() {
-  const { leads, activities, contacts, partners } = useCRM();
+  const { leads, activities, contacts, partners, importLeads } = useCRM();
   const [activeTab, setActiveTab] = useState<'general' | 'pipeline' | 'scoring' | 'data'>('general');
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ count: number; error?: string } | null>(null);
 
   const tabs = [
     { id: 'general' as const, label: 'General' },
@@ -45,6 +48,61 @@ export default function SettingsPage() {
     a.download = `talksmiths_activities_export_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportResult(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsed = parseCSV(text);
+        
+        const newLeads: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>[] = [];
+        
+        parsed.forEach(row => {
+          if (!row.Name) return; // Skip empty rows
+          
+          newLeads.push({
+            companyName: row.Name,
+            sector: row.Sector || '',
+            city: row.City || '',
+            fundingStage: row['Funding Stage'] || '',
+            internationalPresence: row['International Presence'] || '',
+            englishRequirement: row['English Requirement'] || '',
+            dealValue: 0, // Default to 0, dynamically adjusted later by sales rep
+            stage: 'new_lead',
+            assignedTo: '',
+            source: 'CSV Bulk Import',
+            tags: [],
+            nextFollowup: null
+          });
+        });
+
+        if (newLeads.length > 0) {
+          importLeads(newLeads);
+          setImportResult({ count: newLeads.length });
+        } else {
+          setImportResult({ count: 0, error: "No valid rows found in CSV." });
+        }
+      } catch (err) {
+        setImportResult({ count: 0, error: 'Failed to parse CSV. Please ensure it is perfectly formatted.' });
+      } finally {
+        setIsImporting(false);
+        // Reset file input
+        e.target.value = '';
+      }
+    };
+    reader.onerror = () => {
+      setImportResult({ count: 0, error: 'Failed to read file.' });
+      setIsImporting(false);
+    };
+    reader.readAsText(file);
   };
 
   const handleResetData = () => {
@@ -237,6 +295,49 @@ export default function SettingsPage() {
                 <Download size={14} /> Export Activities (CSV)
               </button>
             </div>
+          </div>
+
+          {/* Import */}
+          <div className="crm-card p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-white">Bulk Data Import</h3>
+                <p className="text-xs text-slate-500 mt-1">Import prospects from the Talksmiths standard CSV format.</p>
+              </div>
+            </div>
+            
+            <div className="relative border-2 border-dashed border-white/10 rounded-xl p-8 hover:bg-white/[0.02] transition-colors group text-center cursor-pointer">
+              <input 
+                type="file" 
+                accept=".csv" 
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                onChange={handleFileUpload}
+                disabled={isImporting}
+              />
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                  {isImporting ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    {isImporting ? 'Processing File...' : 'Click or drag CSV file to upload'}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">Supports massive lists. Automatically scores and creates UUIDs.</p>
+                </div>
+              </div>
+            </div>
+
+            {importResult && !importResult.error && (
+              <div className="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-emerald-400" />
+                <p className="text-sm text-emerald-400 font-medium">Successfully imported {importResult.count} leads!</p>
+              </div>
+            )}
+            {importResult?.error && (
+              <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                {importResult.error}
+              </div>
+            )}
           </div>
 
           {/* Reset */}
