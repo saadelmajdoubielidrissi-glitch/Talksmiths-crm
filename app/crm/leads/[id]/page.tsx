@@ -170,7 +170,7 @@ export default function LeadDetailPage() {
                   className="crm-input pr-8 appearance-none cursor-pointer font-medium"
                   style={{ color: getStageColor(lead.stage) }}>
                   {PIPELINE_STAGES.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
+                    <option key={s.id} value={s.id} className="bg-slate-900">{s.name}</option>
                   ))}
                 </select>
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />

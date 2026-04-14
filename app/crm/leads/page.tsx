@@ -185,9 +185,9 @@ export default function LeadsPage() {
               className="crm-input py-1.5 px-3 text-xs w-[140px]"
               value=""
             >
-              <option value="" disabled>Select stage...</option>
+              <option value="" disabled className="bg-slate-900">Select stage...</option>
               {PIPELINE_STAGES.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
+                <option key={s.id} value={s.id} className="bg-slate-900">{s.name}</option>
               ))}
             </select>
           </div>
@@ -218,9 +218,9 @@ export default function LeadsPage() {
           <select value={stageFilter} onChange={e => setStageFilter(e.target.value as PipelineStage | 'all')}
             className="crm-input pr-8 appearance-none cursor-pointer min-w-[140px]"
             style={{ backgroundImage: 'none' }}>
-            <option value="all">All Stages</option>
+            <option value="all" className="bg-slate-900">All Stages</option>
             {PIPELINE_STAGES.map(s => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+              <option key={s.id} value={s.id} className="bg-slate-900">{s.name}</option>
             ))}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
@@ -230,7 +230,7 @@ export default function LeadsPage() {
           <select value={sectorFilter} onChange={e => setSectorFilter(e.target.value)}
             className="crm-input pr-8 appearance-none cursor-pointer min-w-[130px]"
             style={{ backgroundImage: 'none' }}>
-            {SECTORS.map(s => <option key={s} value={s}>{s}</option>)}
+            {SECTORS.map(s => <option key={s} value={s} className="bg-slate-900">{s}</option>)}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
         </div>
@@ -239,7 +239,7 @@ export default function LeadsPage() {
           <select value={cityFilter} onChange={e => setCityFilter(e.target.value)}
             className="crm-input pr-8 appearance-none cursor-pointer min-w-[130px]"
             style={{ backgroundImage: 'none' }}>
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+            {CITIES.map(c => <option key={c} value={c} className="bg-slate-900">{c}</option>)}
           </select>
           <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
         </div>
