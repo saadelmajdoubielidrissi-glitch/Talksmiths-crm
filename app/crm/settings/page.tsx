@@ -6,8 +6,8 @@ import { PIPELINE_STAGES, Lead } from '../lib/types';
 import { parseCSV } from '../lib/csv';
 
 export default function SettingsPage() {
-  const { leads, activities, contacts, partners, importLeads } = useCRM();
-  const [activeTab, setActiveTab] = useState<'general' | 'pipeline' | 'scoring' | 'data'>('general');
+  const { leads, activities, contacts, partners, importLeads, templates, addTemplate, updateTemplate, deleteTemplate } = useCRM();
+  const [activeTab, setActiveTab] = useState<'general' | 'pipeline' | 'scoring' | 'data' | 'templates'>('general');
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<{ count: number; error?: string } | null>(null);
 
@@ -15,8 +15,13 @@ export default function SettingsPage() {
     { id: 'general' as const, label: 'General' },
     { id: 'pipeline' as const, label: 'Pipeline Stages' },
     { id: 'scoring' as const, label: 'Lead Scoring' },
+    { id: 'templates' as const, label: 'Outreach Templates' },
     { id: 'data' as const, label: 'Data Management' },
   ];
+
+  // Template editor state
+  const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
+  const [tempData, setTempData] = useState({ name: '', subject: '', content: '' });
 
   const handleExportLeads = () => {
     const headers = ['Company', 'Sector', 'City', 'Funding', 'English Req.', 'Score', 'Stage', 'Deal Value', 'Source'];
@@ -258,6 +263,96 @@ export default function SettingsPage() {
                   <span className="text-slate-300">Regional / Morocco only</span>
                   <span className="text-slate-400 font-bold">10 pts</span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Templates Tab */}
+      {activeTab === 'templates' && (
+        <div className="space-y-4 max-w-3xl crm-animate-in">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h3 className="text-sm font-semibold text-white">Saved Templates</h3>
+              <p className="text-xs text-slate-500 mt-1">Manage reusable email and LinkedIn outreach scripts.</p>
+            </div>
+            <button onClick={() => { setEditingTemplate('new'); setTempData({ name: '', subject: '', content: '' }); }} className="crm-btn-primary py-1.5 px-3 text-xs">
+              <Plus size={14} /> New Template
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {templates.map(t => (
+              <div key={t.id} className="crm-card p-5 group flex flex-col gap-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-indigo-400">{t.name}</h4>
+                    <p className="text-xs text-slate-400 mt-1">Subject: {t.subject}</p>
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => { setEditingTemplate(t.id); setTempData({ name: t.name, subject: t.subject, content: t.content }); }} className="text-slate-400 hover:text-white text-xs px-2 py-1 bg-white/[0.05] rounded-lg">Edit</button>
+                    <button onClick={() => { if (confirm('Delete template?')) deleteTemplate(t.id); }} className="text-red-400 hover:text-red-300 text-xs p-1"><Trash2 size={14}/></button>
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-900 rounded-lg text-xs font-mono text-slate-300 whitespace-pre-wrap border border-white/5">
+                  {t.content.length > 200 ? t.content.substring(0, 200) + '...' : t.content}
+                </div>
+              </div>
+            ))}
+            
+            {templates.length === 0 && (
+              <div className="text-center p-8 border border-dashed border-white/10 rounded-xl">
+                <p className="text-sm text-slate-400">No templates saved yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Template Editor Modal */}
+      {editingTemplate && (
+        <div className="crm-modal-overlay" onClick={() => setEditingTemplate(null)}>
+          <div className="crm-modal crm-animate-in max-w-2xl w-full" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-white">
+                {editingTemplate === 'new' ? 'Create Template' : 'Edit Template'}
+              </h2>
+              <button onClick={() => setEditingTemplate(null)} className="text-slate-500 hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-slate-400 mb-1.5">Template Name</label>
+                <input className="crm-input" value={tempData.name} onChange={e => setTempData(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Initial Outreach - FR" />
+              </div>
+              <div>
+                <label className="block text-xs text-slate-400 mb-1.5">Subject Line</label>
+                <input className="crm-input" value={tempData.subject} onChange={e => setTempData(p => ({ ...p, subject: e.target.value }))} placeholder="Uses variables like {{CompanyName}}" />
+              </div>
+              <div>
+                <label className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+                  <span>Message Body</span>
+                  <span className="text-indigo-400">Variables: {'{{CompanyName}}'}, {'{{ContactName}}'}, {'{{City}}'}, {'{{Sector}}'}</span>
+                </label>
+                <textarea className="crm-input min-h-[200px] font-mono text-sm leading-relaxed" 
+                  value={tempData.content} onChange={e => setTempData(p => ({ ...p, content: e.target.value }))} 
+                  placeholder="Bonjour {{ContactName}}..." 
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                <button onClick={() => setEditingTemplate(null)} className="crm-btn-secondary">Cancel</button>
+                <button onClick={() => {
+                  if (editingTemplate === 'new') {
+                    addTemplate({ name: tempData.name, subject: tempData.subject, content: tempData.content, category: 'Outbound', language: 'fr' });
+                  } else {
+                    updateTemplate(editingTemplate, { name: tempData.name, subject: tempData.subject, content: tempData.content });
+                  }
+                  setEditingTemplate(null);
+                }} className="crm-btn-primary">
+                  <Save size={16} /> Save Template
+                </button>
               </div>
             </div>
           </div>

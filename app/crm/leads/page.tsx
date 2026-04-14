@@ -1,12 +1,9 @@
 'use client';
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Search, Plus, Filter, ArrowUpDown, X, Building2, MapPin, ChevronDown } from 'lucide-react';
+import { Search, Plus, Filter, ArrowUpDown, X, Building2, MapPin, ChevronDown, Trash2 } from 'lucide-react';
 import { useCRM } from '../lib/store';
 import { Lead, PipelineStage, PIPELINE_STAGES, getStageName, getStageColor } from '../lib/types';
-
-const SECTORS = ['All Sectors', 'BPO', 'FinTech', 'IT', 'Consulting', 'Pharma', 'Automotive', 'Logistics', 'Other'];
-const CITIES = ['All Cities', 'Casablanca', 'Rabat', 'Tangier', 'Marrakech', 'Kénitra', 'Agadir'];
 
 export default function LeadsPage() {
   const { leads, addLead, addContact, contacts } = useCRM();
@@ -17,6 +14,11 @@ export default function LeadsPage() {
   const [sortBy, setSortBy] = useState<'score' | 'company' | 'updated' | 'value'>('score');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
+
+  // Dynamic Filters
+  const SECTORS = useMemo(() => ['All Sectors', ...Array.from(new Set(leads.map(l => l.sector).filter(Boolean))).sort()], [leads]);
+  const CITIES = useMemo(() => ['All Cities', ...Array.from(new Set(leads.map(l => l.city).filter(Boolean))).sort()], [leads]);
 
   // New lead form state
   const [newLead, setNewLead] = useState({
@@ -70,9 +72,38 @@ export default function LeadsPage() {
     return result;
   }, [leads, contacts, search, stageFilter, sectorFilter, cityFilter, sortBy, sortDir]);
 
+  const { bulkMoveLeads, bulkDeleteLeads } = useCRM();
+
   const toggleSort = (col: typeof sortBy) => {
     if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortBy(col); setSortDir('desc'); }
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedLeadIds(new Set(filteredLeads.map(l => l.id)));
+    } else {
+      setSelectedLeadIds(new Set());
+    }
+  };
+
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSet = new Set(selectedLeadIds);
+    if (checked) newSet.add(id);
+    else newSet.delete(id);
+    setSelectedLeadIds(newSet);
+  };
+
+  const handleBulkMove = (stage: PipelineStage) => {
+    bulkMoveLeads(Array.from(selectedLeadIds), stage);
+    setSelectedLeadIds(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    if (confirm(`Are you sure you want to delete ${selectedLeadIds.size} leads?`)) {
+      bulkDeleteLeads(Array.from(selectedLeadIds));
+      setSelectedLeadIds(new Set());
+    }
   };
 
   const handleAddLead = (e: React.FormEvent) => {
@@ -140,6 +171,39 @@ export default function LeadsPage() {
         </button>
       </div>
 
+      {/* Floating Bulk Actions Bar */}
+      {selectedLeadIds.size > 0 && (
+        <div className="flex items-center gap-4 p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl crm-animate-in">
+          <span className="text-sm font-semibold text-indigo-400 pl-2 border-r border-indigo-500/20 pr-4">
+            {selectedLeadIds.size} selected
+          </span>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400">Move to:</span>
+            <select 
+              onChange={e => handleBulkMove(e.target.value as PipelineStage)}
+              className="crm-input py-1.5 px-3 text-xs w-[140px]"
+              value=""
+            >
+              <option value="" disabled>Select stage...</option>
+              {PIPELINE_STAGES.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex-1" />
+          
+          <button onClick={handleBulkDelete} className="crm-btn-secondary text-red-400 border-red-500/20 hover:bg-red-500/10 py-1.5 px-3 text-xs">
+            <Trash2 size={14} /> Delete
+          </button>
+          
+          <button onClick={() => setSelectedLeadIds(new Set())} className="text-slate-500 hover:text-white p-1">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Search + Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[240px]">
@@ -194,6 +258,13 @@ export default function LeadsPage() {
           <table className="crm-table">
             <thead>
               <tr>
+                <th className="w-8">
+                  <input type="checkbox" 
+                    checked={selectedLeadIds.size > 0 && selectedLeadIds.size === filteredLeads.length}
+                    onChange={handleSelectAll}
+                    className="rounded border-slate-600 bg-transparent text-indigo-500 focus:ring-indigo-500" 
+                  />
+                </th>
                 <th onClick={() => toggleSort('score')} className="cursor-pointer hover:text-white w-[60px]">
                   <span className="flex items-center gap-1">Score <ArrowUpDown size={12} /></span>
                 </th>
@@ -213,8 +284,16 @@ export default function LeadsPage() {
             <tbody>
               {filteredLeads.map((lead, index) => {
                 const contact = getPrimaryContact(lead.id);
+                const isSelected = selectedLeadIds.has(lead.id);
                 return (
-                  <tr key={lead.id} className="crm-animate-in" style={{ animationDelay: `${index * 20}ms` }}>
+                  <tr key={lead.id} className={`crm-animate-in ${isSelected ? 'bg-indigo-500/5' : ''}`} style={{ animationDelay: `${index * 5}ms` }}>
+                    <td>
+                      <input type="checkbox" 
+                        checked={isSelected}
+                        onChange={(e) => handleSelectRow(lead.id, e.target.checked)}
+                        className="rounded border-slate-600 bg-transparent text-indigo-500 focus:ring-indigo-500" 
+                      />
+                    </td>
                     <td>
                       <span className="crm-score" style={{
                         background: `${getScoreColor(lead.score)}15`,

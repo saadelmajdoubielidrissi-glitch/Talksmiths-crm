@@ -10,6 +10,7 @@ interface CRMState {
   activities: Activity[];
   partners: Partner[];
   commissions: Commission[];
+  templates: OutreachTemplate[];
   currentUser: CRMUser | null;
   isAuthenticated: boolean;
 }
@@ -24,6 +25,9 @@ interface CRMActions {
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
   moveLead: (id: string, stage: PipelineStage) => void;
+  bulkDeleteLeads: (ids: string[]) => void;
+  bulkMoveLeads: (ids: string[], stage: PipelineStage) => void;
+  bulkAssignLeads: (ids: string[], partnerId: string) => void;
   // Contacts
   addContact: (contact: Omit<Contact, 'id'>) => Contact;
   updateContact: (id: string, updates: Partial<Contact>) => void;
@@ -35,6 +39,10 @@ interface CRMActions {
   // Partners
   addPartner: (partner: Omit<Partner, 'id' | 'joinedAt'>) => Partner;
   updatePartner: (id: string, updates: Partial<Partner>) => void;
+  // Templates
+  addTemplate: (template: Omit<OutreachTemplate, 'id' | 'createdAt'>) => OutreachTemplate;
+  updateTemplate: (id: string, updates: Partial<OutreachTemplate>) => void;
+  deleteTemplate: (id: string) => void;
   // Stats
   getLeadsByStage: () => Record<PipelineStage, Lead[]>;
   getPipelineValue: () => number;
@@ -104,6 +112,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [templates, setTemplates] = useState<OutreachTemplate[]>([]);
   const [currentUser, setCurrentUser] = useState<CRMUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [initialized, setInitialized] = useState(false);
@@ -115,6 +124,17 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     const storedActivities = loadFromStorage('activities', null);
     const storedPartners = loadFromStorage('partners', null);
     const storedCommissions = loadFromStorage('commissions', []);
+    const storedTemplates = loadFromStorage<OutreachTemplate[]>('templates', [
+      {
+        id: 'template-1',
+        name: 'French HR Outbound',
+        category: 'Outbound',
+        language: 'fr',
+        subject: 'Partenariat Formation: {{CompanyName}} & Talksmiths',
+        content: 'Bonjour {{ContactName}},\n\nDans un contexte d\'expansion pour {{CompanyName}} à {{City}}, nous observons un besoin croissant en compétences linguistiques.\n\nRavi d\'en discuter.',
+        createdAt: new Date().toISOString()
+      }
+    ]);
     const storedAuth = loadFromStorage<{ user: CRMUser | null; authed: boolean }>('auth', { user: null, authed: false });
 
     // Use demo data if nothing stored yet
@@ -123,6 +143,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     setActivities(storedActivities || DEMO_ACTIVITIES);
     setPartners(storedPartners || DEMO_PARTNERS);
     setCommissions(storedCommissions);
+    setTemplates(storedTemplates);
     setCurrentUser(storedAuth.user);
     setIsAuthenticated(storedAuth.authed);
     setInitialized(true);
@@ -153,6 +174,11 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     if (!initialized) return;
     saveToStorage('commissions', commissions);
   }, [commissions, initialized]);
+
+  useEffect(() => {
+    if (!initialized) return;
+    saveToStorage('templates', templates);
+  }, [templates, initialized]);
 
   // Auth
   const login = useCallback((email: string, password: string): boolean => {
@@ -217,6 +243,25 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     ));
   }, []);
 
+  const bulkDeleteLeads = useCallback((ids: string[]) => {
+    const idSet = new Set(ids);
+    setLeads(prev => prev.filter(l => !idSet.has(l.id)));
+    setContacts(prev => prev.filter(c => !idSet.has(c.leadId)));
+    setActivities(prev => prev.filter(a => !idSet.has(a.leadId)));
+  }, []);
+
+  const bulkMoveLeads = useCallback((ids: string[], stage: PipelineStage) => {
+    const idSet = new Set(ids);
+    const now = new Date().toISOString();
+    setLeads(prev => prev.map(l => idSet.has(l.id) ? { ...l, stage, updatedAt: now } : l));
+  }, []);
+
+  const bulkAssignLeads = useCallback((ids: string[], assignedTo: string) => {
+    const idSet = new Set(ids);
+    const now = new Date().toISOString();
+    setLeads(prev => prev.map(l => idSet.has(l.id) ? { ...l, assignedTo, updatedAt: now } : l));
+  }, []);
+
   // Contacts
   const addContact = useCallback((data: Omit<Contact, 'id'>): Contact => {
     const newContact: Contact = { ...data, id: `contact-${generateId()}` };
@@ -274,6 +319,25 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     setPartners(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
   }, []);
 
+  // Templates
+  const addTemplate = useCallback((data: Omit<OutreachTemplate, 'id' | 'createdAt'>): OutreachTemplate => {
+    const template: OutreachTemplate = {
+      ...data,
+      id: `template-${generateId()}`,
+      createdAt: new Date().toISOString(),
+    };
+    setTemplates(prev => [...prev, template]);
+    return template;
+  }, []);
+
+  const updateTemplate = useCallback((id: string, updates: Partial<OutreachTemplate>) => {
+    setTemplates(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  }, []);
+
+  const deleteTemplate = useCallback((id: string) => {
+    setTemplates(prev => prev.filter(t => t.id !== id));
+  }, []);
+
   // Stats
   const getLeadsByStage = useCallback((): Record<PipelineStage, Lead[]> => {
     const grouped: Record<string, Lead[]> = {};
@@ -321,12 +385,14 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
   }, [leads]);
 
   const contextValue: CRMContextType = {
-    leads, contacts, activities, partners, commissions, currentUser, isAuthenticated,
+    leads, contacts, activities, partners, commissions, templates, currentUser, isAuthenticated,
     login, logout,
     addLead, importLeads, updateLead, deleteLead, moveLead,
+    bulkDeleteLeads, bulkMoveLeads, bulkAssignLeads,
     addContact, updateContact, deleteContact, getContactsForLead,
     addActivity, getActivitiesForLead,
     addPartner, updatePartner,
+    addTemplate, updateTemplate, deleteTemplate,
     getLeadsByStage, getPipelineValue, getConversionRate,
     getFollowupsDueToday, getRecentActivities, getSectorBreakdown,
   };

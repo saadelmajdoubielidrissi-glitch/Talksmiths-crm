@@ -21,7 +21,7 @@ export default function LeadDetailPage() {
   const {
     leads, updateLead, deleteLead, moveLead,
     getContactsForLead, addContact, updateContact, deleteContact,
-    getActivitiesForLead, addActivity,
+    getActivitiesForLead, addActivity, templates
   } = useCRM();
 
   const lead = leads.find(l => l.id === id);
@@ -49,6 +49,23 @@ export default function LeadDetailPage() {
     if (!activityContent.trim()) return;
     addActivity({ leadId: id, type: activityType, content: activityContent.trim() });
     setActivityContent('');
+  };
+
+  const handleInsertTemplate = (templateId: string) => {
+    const template = templates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const primaryContact = contacts.find(c => c.isPrimary) || contacts[0];
+    let content = template.content;
+    
+    // Dynamic Variable Replacement
+    content = content.replace(/\{\{CompanyName\}\}/g, lead.companyName);
+    content = content.replace(/\{\{Sector\}\}/g, lead.sector || 'your sector');
+    content = content.replace(/\{\{City\}\}/g, lead.city || 'your city');
+    content = content.replace(/\{\{ContactName\}\}/g, primaryContact ? primaryContact.name : 'there');
+
+    const subjectLine = template.subject ? `Subject: ${template.subject.replace(/\{\{CompanyName\}\}/g, lead.companyName)}\n\n` : '';
+    setActivityContent(subjectLine + content);
   };
 
   const handleAddContact = (e: React.FormEvent) => {
@@ -306,6 +323,21 @@ export default function LeadDetailPage() {
                 );
               })}
             </div>
+
+            {/* Template Selector (Shown only for Email/LinkedIn) */}
+            {(activityType === 'email' || activityType === 'linkedin') && templates.length > 0 && (
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-xs text-slate-500 font-medium whitespace-nowrap">Insert Template:</span>
+                <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
+                  {templates.map(t => (
+                    <button key={t.id} onClick={() => handleInsertTemplate(t.id)}
+                      className="text-[11px] px-3 py-1.5 rounded-lg bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors whitespace-nowrap border border-white/5">
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Text Area */}
             <textarea value={activityContent} onChange={e => setActivityContent(e.target.value)}
