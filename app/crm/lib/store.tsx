@@ -1,7 +1,7 @@
 'use client';
 // Talksmiths CRM — Data Store (localStorage-backed, Supabase-ready)
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Lead, Contact, Activity, Partner, Commission, CRMUser, PipelineStage } from './types';
+import { Lead, Contact, Activity, Partner, Commission, CRMUser, PipelineStage, OutreachTemplate } from './types';
 import { DEMO_LEADS, DEMO_CONTACTS, DEMO_ACTIVITIES, DEMO_USERS, DEMO_PARTNERS } from './mockData';
 
 interface CRMState {
