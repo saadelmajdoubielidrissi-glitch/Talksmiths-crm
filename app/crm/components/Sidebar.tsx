@@ -37,11 +37,9 @@ export function Sidebar() {
         borderRight: '1px solid rgba(255,255,255,0.06)',
       }}
     >
-      {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-          <Zap size={18} className="text-white" />
+        <div className="w-12 h-12 flex items-center justify-center shrink-0">
+          <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">

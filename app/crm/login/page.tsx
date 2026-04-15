@@ -35,11 +35,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4" 
       style={{ background: 'radial-gradient(ellipse at 50% 30%, #1a1540 0%, #0a0b0f 70%)' }}>
       <div className="w-full max-w-[400px] crm-animate-in">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-            <Zap size={28} className="text-white" />
+          <div className="w-24 h-24 flex items-center justify-center mb-4">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Talksmiths</h1>
           <p className="text-xs text-slate-500 uppercase tracking-[0.25em] mt-1">Command Center</p>
