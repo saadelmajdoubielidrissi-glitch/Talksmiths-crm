@@ -38,7 +38,7 @@ export function Sidebar() {
       }}
     >
       <div className="flex items-center gap-3 px-5 py-5 border-b border-white/5">
-        <div className="w-12 h-12 flex items-center justify-center shrink-0">
+        <div className="w-10 h-10 flex items-center justify-center shrink-0">
           <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (

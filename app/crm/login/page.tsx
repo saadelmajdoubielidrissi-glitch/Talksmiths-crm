@@ -36,7 +36,7 @@ export default function LoginPage() {
       style={{ background: 'radial-gradient(ellipse at 50% 30%, #1a1540 0%, #0a0b0f 70%)' }}>
       <div className="w-full max-w-[400px] crm-animate-in">
         <div className="flex flex-col items-center mb-10">
-          <div className="w-24 h-24 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 flex items-center justify-center mb-4">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Talksmiths</h1>
