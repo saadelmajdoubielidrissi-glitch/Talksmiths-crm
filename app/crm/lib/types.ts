@@ -31,6 +31,7 @@ export interface Lead {
   source: string;
   tags: string[];
   nextFollowup: string | null;
+  position: number;
   createdAt: string;
   updatedAt: string;
 }

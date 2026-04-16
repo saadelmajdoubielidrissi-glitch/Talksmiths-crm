@@ -8,6 +8,8 @@ import { DarkModeToggle } from './DarkModeToggle'
 
 const navLinks = [
   { href: '/methodology', label: 'Methodology' },
+  { href: '/lesson-forge', label: '⚡ Forge', highlight: true },
+  { href: '/library', label: '📚 Library' },
   { href: '/platform', label: 'Platform' },
   { href: '/services', label: 'Services' },
   { href: '/about', label: 'About' },
@@ -42,7 +44,11 @@ export const Navbar = () => {
             <Link
               key={link.href}
               href={link.href}
-              className="relative group text-gray-700 dark:text-gray-300 hover:text-teal transition-colors font-medium"
+              className={`relative group transition-colors font-medium ${
+                (link as { highlight?: boolean }).highlight
+                  ? 'text-teal dark:text-teal font-semibold'
+                  : 'text-gray-700 dark:text-gray-300 hover:text-teal'
+              }`}
             >
               {link.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-teal transition-all group-hover:w-full" />

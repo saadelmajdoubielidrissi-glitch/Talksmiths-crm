@@ -1,0 +1,534 @@
+/* ─────────────────────────────────────────────────────────── */
+/* Talksmiths Lesson Library — Design System                   */
+/* ─────────────────────────────────────────────────────────── */
+
+.lib-root {
+  background: #04060f;
+  min-height: 100vh;
+  color: #f1f5f9;
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  padding-top: 80px;
+}
+
+/* ── Hero ── */
+.lib-hero {
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(99,102,241,0.2) 0%, transparent 70%);
+  padding: 64px 24px 40px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.lib-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #818cf8;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.lib-hero h1 {
+  font-family: var(--font-serif), 'Source Serif 4', serif;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.lib-hero p {
+  font-size: 1.05rem;
+  color: #64748b;
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.lib-hero-stat {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #818cf8;
+}
+
+/* ── Industry Nav ── */
+.lib-industry-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 20px 32px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: sticky;
+  top: 72px;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+}
+
+.lib-nav-chip {
+  padding: 6px 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.lib-nav-chip:hover {
+  color: #f1f5f9;
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.lib-nav-chip.active {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.4);
+  color: #818cf8;
+}
+
+/* ── Filters ── */
+.lib-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 32px;
+  background: rgba(14,16,24,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.lib-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 360px;
+}
+
+.lib-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.lib-search-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 9px 32px 9px 36px;
+  font-size: 13px;
+  color: #f1f5f9;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.lib-search-input:focus {
+  border-color: rgba(99,102,241,0.4);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.08);
+}
+
+.lib-search-input::placeholder { color: #475569; }
+
+.lib-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: all 0.15s;
+}
+
+.lib-search-clear:hover { color: #f1f5f9; background: rgba(255,255,255,0.08); }
+
+.lib-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lib-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-right: 2px;
+}
+
+.lib-filter-chip {
+  padding: 5px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lib-filter-chip:hover { color: #f1f5f9; border-color: rgba(255,255,255,0.18); }
+.lib-filter-chip.active { color: #f1f5f9; background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+
+/* ── Content ── */
+.lib-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ── Industry Section ── */
+.lib-industry-section {
+  animation: lib-fadeIn 0.4s ease forwards;
+}
+
+@keyframes lib-fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.lib-industry-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.lib-industry-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.lib-industry-info { flex: 1; }
+
+.lib-industry-name {
+  font-family: var(--font-serif), serif;
+  font-size: 1.6rem;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.lib-industry-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.lib-industry-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.lib-count-number {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-serif), serif;
+  line-height: 1;
+}
+
+.lib-count-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+/* ── Lessons Grid ── */
+.lib-lessons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .lib-lessons-grid { grid-template-columns: 1fr; }
+  .lib-industry-header { flex-wrap: wrap; }
+  .lib-industry-count { display: none; }
+}
+
+/* ── Lesson Card ── */
+.lib-lesson-card {
+  background: rgba(14,16,28,0.9);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.lib-lesson-card:hover {
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+}
+
+.lib-lesson-card-header {
+  padding: 20px 20px 0;
+}
+
+.lib-lesson-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.lib-badge {
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.lib-badge-neutral {
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #64748b;
+}
+
+.lib-lesson-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.lib-lesson-subtitle {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.lib-lesson-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.lib-lesson-detail {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lib-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #475569;
+  min-width: 90px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.lib-detail-value {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.lib-lesson-description {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.65;
+  margin-top: 4px;
+}
+
+.lib-lesson-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 20px 14px;
+}
+
+.lib-tag {
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 100px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.lib-lesson-actions {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.lib-btn-primary {
+  flex: 1;
+  padding: 9px 14px;
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.lib-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+}
+
+.lib-btn-secondary {
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.lib-btn-secondary:hover {
+  background: rgba(255,255,255,0.08);
+  color: #f1f5f9;
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* ── Show More ── */
+.lib-show-more {
+  display: flex;
+  justify-content: center;
+}
+
+.lib-show-more-btn {
+  padding: 9px 24px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lib-show-more-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #f1f5f9;
+}
+
+/* ── CTA ── */
+.lib-cta-card {
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(13,122,126,0.1) 0%, rgba(14,16,28,0.9) 100%);
+  border: 1px solid rgba(13,122,126,0.2);
+  border-radius: 24px;
+  padding: 56px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.lib-cta-emoji { font-size: 48px; }
+
+.lib-cta-title {
+  font-family: var(--font-serif), serif;
+  font-size: 1.8rem;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+
+.lib-cta-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.lib-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: linear-gradient(135deg, #0d7a7e, #0fa3a8);
+  color: white;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.lib-cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(13,122,126,0.4);
+}
+
+/* ── Scrollbar ── */
+.lib-root *::-webkit-scrollbar { width: 5px; }
+.lib-root *::-webkit-scrollbar-track { background: transparent; }
+.lib-root *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }

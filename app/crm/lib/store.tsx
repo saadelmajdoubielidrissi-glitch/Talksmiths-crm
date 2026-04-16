@@ -25,6 +25,7 @@ interface CRMActions {
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
   moveLead: (id: string, stage: PipelineStage) => void;
+  reorderLead: (id: string, newIndex: number) => void;
   bulkDeleteLeads: (ids: string[]) => void;
   bulkMoveLeads: (ids: string[], stage: PipelineStage) => void;
   bulkAssignLeads: (ids: string[], partnerId: string) => void;
@@ -206,10 +207,16 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
       ...leadData,
       id: `lead-${generateId()}`,
       score: calculateScore(leadData),
+      position: 0, // Default to top
       createdAt: now,
       updatedAt: now,
     };
-    setLeads(prev => [newLead, ...prev]);
+    setLeads(prev => {
+      // Offset other leads in same stage
+      const stageLeads = prev.filter(l => l.stage === leadData.stage);
+      const updated = prev.map(l => l.stage === leadData.stage ? { ...l, position: l.position + 1 } : l);
+      return [newLead, ...updated];
+    });
     return newLead;
   }, []);
 
@@ -219,6 +226,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
       ...data,
       id: `lead-${generateId()}`,
       score: calculateScore(data),
+      position: index,
       createdAt: now,
       updatedAt: now,
     }));
@@ -238,9 +246,37 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const moveLead = useCallback((id: string, stage: PipelineStage) => {
-    setLeads(prev => prev.map(l =>
-      l.id === id ? { ...l, stage, updatedAt: new Date().toISOString() } : l
-    ));
+    setLeads(prev => {
+      const lead = prev.find(l => l.id === id);
+      if (!lead || lead.stage === stage) return prev;
+
+      const now = new Date().toISOString();
+      return prev.map(l => {
+        if (l.id === id) return { ...l, stage, position: 0, updatedAt: now };
+        if (l.stage === stage) return { ...l, position: l.position + 1 };
+        return l;
+      });
+    });
+  }, []);
+
+  const reorderLead = useCallback((id: string, newIndex: number) => {
+    setLeads(prev => {
+      const lead = prev.find(l => l.id === id);
+      if (!lead) return prev;
+
+      const stage = lead.stage;
+      const stageLeads = prev
+        .filter(l => l.stage === stage)
+        .sort((a, b) => a.position - b.position);
+      
+      const otherLeads = prev.filter(l => l.stage !== stage);
+      
+      const remainingStageLeads = stageLeads.filter(l => l.id !== id);
+      remainingStageLeads.splice(newIndex, 0, lead);
+
+      const reordered = remainingStageLeads.map((l, idx) => ({ ...l, position: idx }));
+      return [...otherLeads, ...reordered];
+    });
   }, []);
 
   const bulkDeleteLeads = useCallback((ids: string[]) => {
@@ -387,7 +423,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
   const contextValue: CRMContextType = {
     leads, contacts, activities, partners, commissions, templates, currentUser, isAuthenticated,
     login, logout,
-    addLead, importLeads, updateLead, deleteLead, moveLead,
+    addLead, importLeads, updateLead, deleteLead, moveLead, reorderLead,
     bulkDeleteLeads, bulkMoveLeads, bulkAssignLeads,
     addContact, updateContact, deleteContact, getContactsForLead,
     addActivity, getActivitiesForLead,
