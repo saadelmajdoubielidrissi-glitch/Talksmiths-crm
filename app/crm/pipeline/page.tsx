@@ -35,7 +35,7 @@ export default function PipelinePage() {
       // Sector filter
       if (activeSector === 'all') return true;
       const group = SECTOR_GROUPS.find(g => g.id === activeSector);
-      return group?.patterns.some(p => l.sector.toLowerCase().includes(p));
+      return group?.patterns?.some(p => l.sector.toLowerCase().includes(p)) ?? true;
     });
   }, [leads, searchQuery, activeSector]);
 

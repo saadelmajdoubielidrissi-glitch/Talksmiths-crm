@@ -214,7 +214,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
     setLeads(prev => {
       // Offset other leads in same stage
       const stageLeads = prev.filter(l => l.stage === leadData.stage);
-      const updated = prev.map(l => l.stage === leadData.stage ? { ...l, position: l.position + 1 } : l);
+      const updated = prev.map(l => l.stage === leadData.stage ? { ...l, position: (l.position || 0) + 1 } : l);
       return [newLead, ...updated];
     });
     return newLead;
@@ -222,7 +222,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
 
   const importLeads = useCallback((leadsData: Omit<Lead, 'id' | 'createdAt' | 'updatedAt' | 'score'>[]) => {
     const now = new Date().toISOString();
-    const newLeads = leadsData.map(data => ({
+    const newLeads = leadsData.map((data, index) => ({
       ...data,
       id: `lead-${generateId()}`,
       score: calculateScore(data),
@@ -253,7 +253,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
       const now = new Date().toISOString();
       return prev.map(l => {
         if (l.id === id) return { ...l, stage, position: 0, updatedAt: now };
-        if (l.stage === stage) return { ...l, position: l.position + 1 };
+        if (l.stage === stage) return { ...l, position: (l.position || 0) + 1 };
         return l;
       });
     });
@@ -267,7 +267,7 @@ export function CRMProvider({ children }: { children: React.ReactNode }) {
       const stage = lead.stage;
       const stageLeads = prev
         .filter(l => l.stage === stage)
-        .sort((a, b) => a.position - b.position);
+        .sort((a, b) => (a.position || 0) - (b.position || 0));
       
       const otherLeads = prev.filter(l => l.stage !== stage);
       

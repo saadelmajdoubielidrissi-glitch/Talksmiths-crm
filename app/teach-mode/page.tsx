@@ -12,7 +12,15 @@ interface LessonSection {
   duration: number
   objective?: string
   teacherNote?: string
-  content?: { intro?: string; explanation?: string; challenge?: string; [key: string]: unknown }
+  content?: { 
+    intro?: string; 
+    explanation?: string; 
+    challenge?: string; 
+    readingText?: string;
+    caseStudy?: string;
+    sceneSetting?: string;
+    [key: string]: unknown 
+  }
 }
 
 interface GeneratedLesson {
